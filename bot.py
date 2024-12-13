@@ -3,6 +3,7 @@ from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiohttp import web
 
 # Logging configuration
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s')
@@ -139,9 +140,19 @@ async def handle_callback(callback: types.CallbackQuery):
     )
     await callback.answer()
 
-# Main execution
+async def start_web_app():
+    app = web.Application()
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, '0.0.0.0', 8080)
+    await site.start()
+
+# Modify your main() function
 async def main():
     try:
+        # Start web server
+        await start_web_app()
+        
         logger.info("Starting bot...")
         await dp.start_polling(bot)
     except Exception as e:
