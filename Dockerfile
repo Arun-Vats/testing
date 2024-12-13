@@ -16,6 +16,11 @@ RUN apt-get update && apt-get install -y \
 
 # Create and switch to non-root user
 RUN useradd -m botuser
+
+# Ensure the app directory is writable by botuser
+RUN chown -R botuser:botuser /app
+
+# Switch to non-root user
 USER botuser
 
 # Copy requirements file first to leverage Docker cache
