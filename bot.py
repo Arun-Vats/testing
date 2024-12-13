@@ -140,12 +140,15 @@ async def handle_callback(callback: types.CallbackQuery):
     )
     await callback.answer()
 
+# Modify your web server startup in bot.py
 async def start_web_app():
     app = web.Application()
+    app.router.add_get('/health', health_check)
     runner = web.AppRunner(app)
     await runner.setup()
-    site = web.TCPSite(runner, '0.0.0.0', 8080)
+    site = web.TCPSite(runner, '0.0.0.0', 8000)  # Explicitly use 8000
     await site.start()
+    return app
 
 # Modify your main() function
 async def main():
