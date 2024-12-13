@@ -5,6 +5,9 @@ build:
 deploy:
   - name: cinemasearch-bot
     type: web
+    ports:
+      - port: 8000
+        protocol: TCP
     env:
-      - key: BOT_TOKEN
-        value: your_bot_token_here
+      - key: PORT
+        value: "8000"
