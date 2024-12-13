@@ -1,0 +1,10 @@
+version: "2"
+build:
+  context: .
+  dockerfile: Dockerfile
+deploy:
+  - name: cinemasearch-bot
+    type: web
+    env:
+      - key: BOT_TOKEN
+        value: your_bot_token_here
