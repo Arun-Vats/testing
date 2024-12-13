@@ -140,27 +140,32 @@ async def handle_callback(callback: types.CallbackQuery):
     )
     await callback.answer()
 
-# Modify your web server startup in bot.py
 async def start_web_app():
     app = web.Application()
     app.router.add_get('/health', health_check)
+    app.router.add_get('/', health_check)  # Additional root route
     runner = web.AppRunner(app)
     await runner.setup()
-    site = web.TCPSite(runner, '0.0.0.0', 8000)  # Explicitly use 8000
+    
+    port = int(os.getenv('PORT', 8000))
+    site = web.TCPSite(runner, '0.0.0.0', port)
     await site.start()
+    logging.info(f"Web server started on port {port}")
     return app
 
-# Modify your main() function
+async def health_check(request):
+    return web.Response(text="CinemaSearch Bot is running!", status=200)
+
 async def main():
     try:
-        # Start web server
-        await start_web_app()
+        # Start web server first
+        web_app = await start_web_app()
         
-        logger.info("Starting bot...")
+        # Start bot polling
         await dp.start_polling(bot)
     except Exception as e:
-        logger.error(f"Error starting bot: {e}")
+        logging.error(f"Startup error: {e}")
 
 if __name__ == '__main__':
-    import asyncio
+    logging.basicConfig(level=logging.INFO)
     asyncio.run(main())
