@@ -18,6 +18,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-
+EXPOSE 8080
 # Run the bot when the container launches
 CMD ["python", "bot.py"]
