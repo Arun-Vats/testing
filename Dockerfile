@@ -1,49 +1,34 @@
-# Use Python slim image as base
-FROM python:3.11-slim
-
-# Set working directory
-WORKDIR /app
+# Use an official Python runtime as a parent image
+FROM python:3.9-slim
 
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PORT=8000 \
-    PIP_NO_CACHE_DIR=1 \
-    PYTHONPATH=/app
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Set working directory in the container
+WORKDIR /app
 
 # Install system dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y \
     gcc \
-    curl \  # Added for healthcheck
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Create and switch to non-root user
-RUN useradd -m appuser && \
-    chown -R appuser:appuser /app
+RUN useradd -m botuser
+USER botuser
 
-# Copy requirements first to leverage Docker cache
-COPY --chown=appuser:appuser requirements.txt .
+# Copy requirements file first to leverage Docker cache
+COPY --chown=botuser:botuser requirements.txt .
 
 # Install Python dependencies
-RUN pip install --no-cache-dir --retries 3 -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY --chown=appuser:appuser . .
+# Copy the rest of the application code
+COPY --chown=botuser:botuser . .
 
-# Create config directory if using python-dotenv
-RUN mkdir -p /app/config && \
-    chown -R appuser:appuser /app/config
-
-# Switch to non-root user
-USER appuser
-
-# Expose port
+# Expose port (if needed)
 EXPOSE 8000
-
-# Healthcheck using the health endpoint from bot.py
-HEALTHCHECK --interval=30s --timeout=3s \
-    CMD curl -f http://localhost:8000/health || exit 1
 
 # Command to run the application
 CMD ["python", "bot.py"]
