@@ -44,6 +44,7 @@ class TelegramSearchBot:
            logger.error(f"Cleanup error: {e}")
 
    async def start(self):
+       await start_server()
        restart_delay = 10
        max_restart_delay = 300
        current_delay = restart_delay
