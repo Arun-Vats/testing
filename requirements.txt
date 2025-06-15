@@ -1,0 +1,7 @@
+wheel
+pyaes
+telethon
+aiohttp
+python-dotenv
+pymongo
+requests
